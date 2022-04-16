@@ -15,6 +15,7 @@
 				"path": "/bin/zsh",
 			}
 		},
+		"dotfiles.repository": "muk-ai/dotfiles"
 	},
 
 	// Add the IDs of extensions you want installed when the container is created.
