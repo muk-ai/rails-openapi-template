@@ -15,7 +15,8 @@
 				"path": "/bin/zsh",
 			}
 		},
-		"dotfiles.repository": "muk-ai/dotfiles"
+		"dotfiles.repository": "muk-ai/dotfiles",
+		"remote.containers.copyGitConfig": false,
 	},
 
 	// Add the IDs of extensions you want installed when the container is created.
