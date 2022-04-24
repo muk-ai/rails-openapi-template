@@ -1,6 +1,5 @@
 blank_issues_enabled: true
 contact_links:
-  - name: Issue
-    about: Issue template
+  - name: Todo
+    about: add todo
     url: https://github.com/muk-ai/rails-openapi-template/issues/new?projects=muk-ai/rails-openapi-template/1&labels=todo
-
