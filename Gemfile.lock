@@ -136,6 +136,8 @@ GEM
       nokogiri (>= 1.6)
     rails-html-sanitizer (1.4.2)
       loofah (~> 2.3)
+    rails_pretty_json (1.0.0)
+      rails
     railties (7.0.2.3)
       actionpack (= 7.0.2.3)
       activesupport (= 7.0.2.3)
@@ -165,6 +167,7 @@ DEPENDENCIES
   pg (~> 1.1)
   puma (~> 5.0)
   rails (~> 7.0.2, >= 7.0.2.3)
+  rails_pretty_json
   tzinfo-data
 
 RUBY VERSION
