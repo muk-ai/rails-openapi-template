@@ -44,6 +44,8 @@ group :development, :test do
 
   gem "committee"
   gem "committee-rails"
+
+  gem "annotate"
 end
 
 group :development do
