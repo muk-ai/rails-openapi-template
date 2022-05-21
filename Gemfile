@@ -46,6 +46,8 @@ group :development, :test do
   gem "committee-rails"
 
   gem "annotate"
+
+  gem "factory_bot_rails"
 end
 
 group :development do
