@@ -11,5 +11,12 @@
 require 'rails_helper'
 
 RSpec.describe Task, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe '#valid?' do
+    context 'when description is empty' do
+      subject { build(:task) }
+      it 'is not valid' do
+        expect(subject).not_to be_valid
+      end
+    end
+  end
 end
