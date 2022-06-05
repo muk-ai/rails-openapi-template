@@ -7,31 +7,8 @@ env:
   cache-version: v1
 
 jobs:
-  cache_bundle_install:
-    # see: https://github.com/actions/virtual-environments
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        ruby-version: ["3.1.1"]
-    steps:
-    - uses: actions/checkout@v3
-    - uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: ${{ matrix.ruby-version }}
-    - uses: actions/cache@v3
-      with:
-        path: vendor/bundle
-        key: gem-${{ runner.os }}-${{ matrix.ruby-version }}-${{ env.cache-version }}-${{ hashFiles(format('{0}{1}', github.workspace, '/Gemfile.lock')) }}
-        restore-keys: gem-${{ runner.os }}-${{ matrix.ruby-version }}-${{ env.cache-version }}-
-    - name: bundle config
-      run: |
-        bundle config --local path vendor/bundle
-    - name: bundle install
-      run: |
-        bundle install --jobs 4 --retry 3
   rubocop:
-    needs: cache_bundle_install
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-20.04 # see: https://github.com/actions/virtual-environments
     strategy:
       matrix:
         ruby-version: ["3.1.1"]
@@ -40,14 +17,7 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby-version }}
-    - uses: actions/cache@v3
-      with:
-        path: vendor/bundle
-        key: gem-${{ runner.os }}-${{ matrix.ruby-version }}-${{ env.cache-version }}-${{ hashFiles(format('{0}{1}', github.workspace, '/Gemfile.lock')) }}
-        restore-keys: gem-${{ runner.os }}-${{ matrix.ruby-version }}-${{ env.cache-version }}-
-    - name: bundle config
-      run: |
-        bundle config --local path vendor/bundle
+        bundler-cache: true
     - name: bundle install
       run: |
         bundle install --jobs 4 --retry 3
