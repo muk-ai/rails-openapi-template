@@ -18,6 +18,7 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true
+        cache-version: ${{ env.cache-version }}
     - name: bundle install
       run: |
         bundle install --jobs 4 --retry 3
