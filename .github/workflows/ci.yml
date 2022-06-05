@@ -19,9 +19,6 @@ jobs:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true
         cache-version: ${{ env.cache-version }}
-    - name: bundle install
-      run: |
-        bundle install --jobs 4 --retry 3
     - uses: reviewdog/action-setup@v1
       with:
         reviewdog_version: latest
