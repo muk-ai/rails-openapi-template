@@ -1,0 +1,12 @@
+default: &default
+  firebase:
+    project_id: "rails-openapi-template"
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default
