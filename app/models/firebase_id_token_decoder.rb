@@ -5,7 +5,7 @@ class FirebaseIdTokenDecoder
   ID_TOKEN_ISSUER_PREFIX = 'https://securetoken.google.com/'.freeze
   ID_TOKEN_CERT_URI = 'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com'.freeze
 
-  FIREBASE_PROJECT_ID = 'beagile'.freeze
+  FIREBASE_PROJECT_ID = Rails.configuration.x.settings.firebase.project_id
 
   class FirebaseDecodeTokenError < StandardError; end
 
