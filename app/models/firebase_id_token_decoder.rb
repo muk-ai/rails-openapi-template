@@ -36,7 +36,7 @@ class FirebaseIdTokenDecoder
     @public_keys ||= fetch_public_keys
     public_key = @public_keys[kid]
     unless public_key
-      raise_decode_error <<-MSG.squish
+      raise_decode_error <<~MSG.squish
         Firebase ID token has "kid" claim which does not correspond to
         a known public key. Most likely the ID token is expired, so get a fresh token from your client
         app and try again.
@@ -84,7 +84,7 @@ class FirebaseIdTokenDecoder
   def validate_alg(alg)
     return if alg == ALGORITHM
 
-    raise_decode_error <<-MSG.squish
+    raise_decode_error <<~MSG.squish
       Firebase ID token has incorrect algorithm.
       Expected "#{ALGORITHM}" but got "#{alg}".
     MSG
@@ -93,7 +93,7 @@ class FirebaseIdTokenDecoder
   def validate_aud(aud)
     return if aud == FIREBASE_PROJECT_ID
 
-    raise_decode_error <<-MSG.squish
+    raise_decode_error <<~MSG.squish
       Firebase ID token has incorrect "aud" (audience) claim.
       Expected "#{FIREBASE_PROJECT_ID}" but got "aud".
     MSG
@@ -103,7 +103,7 @@ class FirebaseIdTokenDecoder
     issuer = "#{ID_TOKEN_ISSUER_PREFIX}#{FIREBASE_PROJECT_ID}"
     return if iss == issuer
 
-    raise_decode_error <<-MSG.squish
+    raise_decode_error <<~MSG.squish
       Firebase ID token has incorrect "iss" (issuer) claim.
       Expected "#{issuer}" but got "#{iss}".
     MSG
