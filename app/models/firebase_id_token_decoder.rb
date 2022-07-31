@@ -3,7 +3,7 @@
 class FirebaseIdTokenDecoder
   ALGORITHM = 'RS256'.freeze
   ID_TOKEN_ISSUER_PREFIX = 'https://securetoken.google.com/'.freeze
-  ID_TOKEN_CERT_URI = 'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com'.freeze
+  ID_TOKEN_JWK_URL = 'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'
 
   FIREBASE_PROJECT_ID = Rails.configuration.x.settings.firebase.project_id
 
@@ -13,57 +13,34 @@ class FirebaseIdTokenDecoder
     raise_decode_error('id token must be a String') unless id_token.is_a?(String)
 
     @id_token = id_token
-    @kid = kid(id_token)
-    raise_decode_error('Firebase ID token has no "kid" claim.') unless @kid
-
-    @certificate = identify_certificate(@kid)
+    @jwks = fetch_jwks
   end
 
   def decode
-    option = { algorithm: ALGORITHM, verify_iat: true }
-    payload, header = decode_token(@id_token, @certificate.public_key, true, option)
-    validate_jwt(payload, header)
+    header, payload = decode_id_token(@id_token, @jwks)
+    validate(payload)
 
     {
+      'header' => header,
       'payload' => payload,
-      'header' => header
     }
   end
 
   private
 
-  def identify_certificate(kid)
-    @public_keys ||= fetch_public_keys
-    public_key = @public_keys[kid]
-    unless public_key
-      raise_decode_error <<~MSG.squish
-        Firebase ID token has "kid" claim which does not correspond to
-        a known public key. Most likely the ID token is expired, so get a fresh token from your client
-        app and try again.
-      MSG
-    end
-
-    OpenSSL::X509::Certificate.new(public_key)
-  end
-
-  def fetch_public_keys
+  def fetch_jwks
     # TODO: 毎回fetchしないようにする
-    response = HTTParty.get(ID_TOKEN_CERT_URI)
-    raise_decode_error("couldn't fetch public keys") if response.code != 200
+    response = HTTParty.get(ID_TOKEN_JWK_URL)
+    raise_decode_error("couldn't fetch jwks") if response.code != 200
 
     response.to_h
   end
 
-  def kid(token)
-    header, * = token.split('.')
-    header_json = Base64.urlsafe_decode64(header)
-    header_hash = JSON.parse(header_json)
-    header_hash['kid']
-  end
-
-  def decode_token(token, key, verify, options)
+  def decode_id_token(id_token, jwks)
     begin
-      payload, header = JWT.decode(token, key, verify, options)
+      payload, header = JWT.decode(id_token, nil, true, { algorithm: ALGORITHM, verify_iat: true, jwks: jwks})
+    rescue JWT::IncorrectAlgorithm
+      raise_decode_error('Firebase ID token has incorrect algorithm.')
     rescue JWT::ExpiredSignature
       raise_decode_error('Firebase ID token has expired.')
     rescue JWT::VerificationError
@@ -71,23 +48,13 @@ class FirebaseIdTokenDecoder
     rescue StandardError => e
       raise_decode_error("There is a problem with the Firebase ID token: #{e.message}")
     end
-    [payload, header]
+    [header, payload]
   end
 
-  def validate_jwt(payload, header)
-    validate_alg(header['alg'])
+  def validate(payload)
     validate_aud(payload['aud'])
     validate_iss(payload['iss'])
     validate_sub(payload['sub'])
-  end
-
-  def validate_alg(alg)
-    return if alg == ALGORITHM
-
-    raise_decode_error <<~MSG.squish
-      Firebase ID token has incorrect algorithm.
-      Expected "#{ALGORITHM}" but got "#{alg}".
-    MSG
   end
 
   def validate_aud(aud)
@@ -95,7 +62,7 @@ class FirebaseIdTokenDecoder
 
     raise_decode_error <<~MSG.squish
       Firebase ID token has incorrect "aud" (audience) claim.
-      Expected "#{FIREBASE_PROJECT_ID}" but got "aud".
+      Expected "#{FIREBASE_PROJECT_ID}" but got "#{aud}".
     MSG
   end
 
