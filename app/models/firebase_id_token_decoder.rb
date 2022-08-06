@@ -79,9 +79,7 @@ class FirebaseIdTokenDecoder
   def validate_sub(sub)
     raise_decode_error('Firebase ID token has no "sub" (subject) claim.') if sub.nil?
     raise_decode_error('Firebase ID token has an empty string "sub" (subject) claim.') if sub.empty?
-    if sub.size > 128
-      raise_decode_error('Firebase ID token has "sub" (subject) claim longer than 128 characters.')
-    end
+    raise_decode_error('Firebase ID token has "sub" (subject) claim longer than 128 characters.') if sub.size > 128
   end
 
   def raise_decode_error(message)
