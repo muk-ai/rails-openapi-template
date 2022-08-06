@@ -37,18 +37,16 @@ class FirebaseIdTokenDecoder
   end
 
   def decode_id_token(id_token, jwks)
-    begin
-      payload, header = JWT.decode(id_token, nil, true, { algorithm: ALGORITHM, verify_iat: true, jwks: })
-    rescue JWT::IncorrectAlgorithm
-      raise_decode_error('Firebase ID token has incorrect algorithm.')
-    rescue JWT::ExpiredSignature
-      raise_decode_error('Firebase ID token has expired.')
-    rescue JWT::VerificationError
-      raise_decode_error('Firebase ID token has invalid signature.')
-    rescue StandardError => e
-      raise_decode_error("There is a problem with the Firebase ID token: #{e.message}")
-    end
+    payload, header = JWT.decode(id_token, nil, true, { algorithm: ALGORITHM, verify_iat: true, jwks: })
     [header, payload]
+  rescue JWT::IncorrectAlgorithm
+    raise_decode_error('Firebase ID token has incorrect algorithm.')
+  rescue JWT::ExpiredSignature
+    raise_decode_error('Firebase ID token has expired.')
+  rescue JWT::VerificationError
+    raise_decode_error('Firebase ID token has invalid signature.')
+  rescue StandardError => e
+    raise_decode_error("There is a problem with the Firebase ID token: #{e.message}")
   end
 
   def validate(payload)
