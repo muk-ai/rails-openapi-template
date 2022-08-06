@@ -3,7 +3,7 @@
 class FirebaseIdTokenDecoder
   ALGORITHM = 'RS256'.freeze
   ID_TOKEN_ISSUER_PREFIX = 'https://securetoken.google.com/'.freeze
-  ID_TOKEN_JWK_URL = 'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'
+  ID_TOKEN_JWK_URL = 'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'.freeze
 
   FIREBASE_PROJECT_ID = Rails.configuration.x.settings.firebase.project_id
 
