@@ -1,6 +1,8 @@
 # 参考記事
 # https://qiita.com/otakky/items/b7582202f5cde8f2dd21
 class FirebaseIdTokenDecoder
+  include Singleton
+
   ALGORITHM = 'RS256'.freeze
   ID_TOKEN_ISSUER_PREFIX = 'https://securetoken.google.com/'.freeze
   ID_TOKEN_JWK_URL = 'https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'.freeze
@@ -9,15 +11,15 @@ class FirebaseIdTokenDecoder
 
   class FirebaseDecodeTokenError < StandardError; end
 
-  def initialize(id_token)
-    raise_decode_error('id token must be a String') unless id_token.is_a?(String)
-
-    @id_token = id_token
+  def initialize
     @jwks = fetch_jwks
   end
 
-  def decode
-    header, payload = decode_id_token(@id_token, @jwks)
+  def decode(id_token)
+    raise_decode_error('id token must be a String') unless id_token.is_a?(String)
+
+    @jwks ||= fetch_jwks
+    header, payload = decode_id_token(id_token, @jwks)
     validate(payload)
 
     {
@@ -29,7 +31,6 @@ class FirebaseIdTokenDecoder
   private
 
   def fetch_jwks
-    # TODO: 毎回fetchしないようにする
     response = HTTParty.get(ID_TOKEN_JWK_URL)
     raise_decode_error("couldn't fetch jwks") if response.code != 200
 
