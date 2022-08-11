@@ -6,7 +6,7 @@ class V1::TasksController < ApplicationController
   def show
     render json: {
       id: params[:id].to_i,
-      description: 'description'
+      description: 'description',
     }
   end
 end
